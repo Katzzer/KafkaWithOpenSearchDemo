@@ -32,6 +32,11 @@ public class KafkaProducerWikimediaApplication {
 			properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         	properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
+			// set high throughput producer configs
+			properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "20"); // Kafka wait in ms before sends data in batch
+			properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, Integer.toString(32 * 1024)); // 32KB, default is 16KB, size of the batch
+			properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+
 			KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
 			String topic = "wikimedia.recentchange";

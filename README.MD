@@ -20,6 +20,12 @@
 - Go to page `localhost:8080`
 - Login is `admin@conduktor.io` password is `admin`
 
+## Free online OpenSearch
+- Go to [bonsai.io](https://bonsai.io)
+- There is free tier with Kibana and limitation:
+  - SSD capacity: 125MB
+  - Memory Limit: 125MB
+
 ## Docker compose explanation
 ### Service: zookeeper
 - Uses the Docker image `confluentinc/cp-zookeeper:7.3.0`. Its hostname is set as zookeeper, and the container name is also set as zookeeper. The service exposes port 2181 and sets several environment variables for config setup.
@@ -60,6 +66,7 @@ props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 ### Setting by version
 - Since Kafka 3.0 `acks=all (-1)` and `enable.indempotence=true`
 - Since Kafka 2.8 and lower `acks=1` and `enable.indempotence=false`
+- Current application setting is visible when app starts
 
 ## How to use Kafka in command line
 - Go to kafka directory `cd kafka_2.13-3.1.0`
