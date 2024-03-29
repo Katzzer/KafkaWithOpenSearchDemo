@@ -1,17 +1,28 @@
 # Kafka with OpenSearch (for of ElasticSearch) demo
 
+## Description
+- This is simple application with 2 modules
+  - producer that gets data from wikimedia 
+  - consumer that sends data to Opensearch
+### Services description
+- Conduktor - runs on port `localhost:8080` - show data from Kafka in GUI
+- OpenSearch database - runs on port `localhost:9200`
+- OpenSearch dashboard - runs on port `localhost:5601` - GUI for OpenSearch
+
 ## How to run all docker images
-- type `docker-compose up`
+- type `docker-compose up` in `kafka-producer-wikimedia`
+- type `docker-compose up` in `kafka-consumer-opensearch`
 
 ## How to stop all docker images
-- type `docker-compose down`
+- type `docker-compose down` in directory `kafka-producer-wikimedia` and `kafka-consumer-opensearch`
 
 ## How to install Kafka locally (no need for this demo, but could be used for getting topics in command line)
 - Download Kafka [Kafka download Pge](https://kafka.apache.org/quickstart)
 - Go to download directory and type `tar -xzf kafka_X.XX-X.X.X.tgz`
 
 ## How to use this app
-- Go to page `localhost:8080` and create topic `wikimedia.recentchange`
+- Run producer from module `kafka-producer-wikimedia`
+- Go to Conductor on page `localhost:8080` and create topic `wikimedia.recentchange`
 - To read current topics (not from history) from command line type: `./kafka-3.7.0-src/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic wikimedia.recentchange`
 - To read all topics (also from history) from command line type: `./kafka-3.7.0-src/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic wikimedia.recentchange --from-beginning`
 - To read topics in Conduktor go to `localhost:8080`, select Topics and select topic `wikimedia.recentchange`

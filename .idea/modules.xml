@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.pavelkostal.kafka-consumer-opensearch.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.pavelkostal.kafka-consumer-opensearch.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/kafka-producer-wikimedia.main.iml" filepath="$PROJECT_DIR$/.idea/modules/kafka-producer-wikimedia.main.iml" />
     </modules>
   </component>

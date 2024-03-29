@@ -22,8 +22,6 @@ dependencies {
 	implementation("com.squareup.okhttp3:okhttp:4.9.3")
 	implementation("com.launchdarkly:okhttp-eventsource:2.5.0")
 
-
-
 	implementation("org.springframework.boot:spring-boot-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
