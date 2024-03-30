@@ -2,8 +2,8 @@
 
 ## Description
 - This is simple application with 2 modules
-  - producer that gets data from wikimedia 
-  - consumer that sends data to Opensearch
+  - producer that gets data from wikimedia and store it in Kafka
+  - consumer that get data from Kafka and send it to Opensearch
 ### Services description
 - Conduktor - runs on port `localhost:8080` - show data from Kafka in GUI
 - OpenSearch database - runs on port `localhost:9200`
@@ -15,10 +15,6 @@
 
 ## How to stop all docker images
 - type `docker-compose down` in directory `kafka-producer-wikimedia` and `kafka-consumer-opensearch`
-
-## How to install Kafka locally (no need for this demo, but could be used for getting topics in command line)
-- Download Kafka [Kafka download Pge](https://kafka.apache.org/quickstart)
-- Go to download directory and type `tar -xzf kafka_X.XX-X.X.X.tgz`
 
 ## How to use this app
 - Run producer from module `kafka-producer-wikimedia`
@@ -79,8 +75,10 @@ props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 - Since Kafka 2.8 and lower `acks=1` and `enable.indempotence=false`
 - Current application setting is visible when app starts
 
-## How to use Kafka in command line
-- Go to kafka directory `cd kafka_2.13-3.1.0`
+## How to use Kafka in command line (no need for this demo, but could be used for getting topics in command line)
+- Download Kafka [Kafka download Pge](https://kafka.apache.org/quickstart)
+- Go to download directory and type `tar -xzf kafka_X.XX-X.X.X.tgz`
+- Go to kafka directory `cd kafka_X.XX-X.X.X`
 - Start ZooKeeper server `./bin/zookeeper-server-start.sh config/zookeeper.properties`
 - Open new terminal and start Kafka broker service `./bin/kafka-server-start.sh config/server.properties`
 - To get all messages open new terminal and type `./bin/kafka-console-consumer.sh --topic amigoscode --from-beginning --bootstrap-server localhost:9092`
