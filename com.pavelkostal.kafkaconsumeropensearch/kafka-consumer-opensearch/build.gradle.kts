@@ -27,7 +27,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-//    implementation("org.apache.httpcomponents:httpasyncclient:4.1.4")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:1.3.15")
 }
 
