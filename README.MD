@@ -2,12 +2,14 @@
 
 ## Description
 - This is simple application with 2 modules
-  - producer gets data from `https://stream.wikimedia.org/v2/stream/recentchange` and store it in Kafka
-  - consumer that get data from Kafka and send it to Opensearch
+  - producer (Spring Boot App) get data from `https://stream.wikimedia.org/v2/stream/recentchange` and store it in Kafka
+  - consumer (Spring Boot App) get data from Kafka and send it to OpenSearch
+  - OpenSearch saves data that could be search or visualised by OpenSearch Dashboard or collected by Logstash for more transformation
+
 ### Services description
 - Conduktor - runs on port `localhost:8080` - show data from Kafka in GUI
 - OpenSearch database - runs on port `localhost:9200`
-- OpenSearch dashboard - runs on port `localhost:5601` - GUI for OpenSearch
+- OpenSearch dashboard - runs on port `localhost:5601` - GUI for OpenSearch - for searching and visualization
 
 ## How to run all docker images
 - type `docker-compose up` in `kafka-producer-wikimedia`
@@ -26,6 +28,9 @@
 ## How to use conductor (Conductor is app from company Conductor founded by Stéphane Maarek - popular Udemy Instructor)
 - Go to page `localhost:8080`
 - Login is `admin@conduktor.io` password is `admin`
+- Select cluster (should be preselected `my-local-kafka-cluster`)
+- In `Topics` is list of Topics and inside all messages
+- In `Consumer Groups` - is list of Consumer Groups where is possible to see and set offset (In Kafka, an `offset` is a unique ID for a record in a partition. Consumers use offsets to track their position in a partition and resume from their last position in case of a failure.)
 
 ## How to use OpenSearch
 - Go to `localhost:5601`
