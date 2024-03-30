@@ -1,10 +1,10 @@
 # Kafka with OpenSearch (for of ElasticSearch) demo
 
 ## Description
-- This is simple application with 2 modules
+- This is simple application with 2 Spring Boot modules and OpenSearch
   - producer (Spring Boot App) get data from `https://stream.wikimedia.org/v2/stream/recentchange` and store it in Kafka
   - consumer (Spring Boot App) get data from Kafka and send it to OpenSearch
-  - OpenSearch saves data that could be search or visualised by OpenSearch Dashboard or collected by Logstash for more transformation
+  - OpenSearch stores data which can be searched or visualized using OpenSearch Dashboard, or further transformed by Logstash.
 
 ### Services description
 - Conduktor - runs on port `localhost:8080` - show data from Kafka in GUI
