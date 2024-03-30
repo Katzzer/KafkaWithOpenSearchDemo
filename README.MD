@@ -27,6 +27,35 @@
 - Go to page `localhost:8080`
 - Login is `admin@conduktor.io` password is `admin`
 
+## How to use OpenSearch
+- Go to `localhost:5601`
+### Search example
+- Get all documents that ends with `.jpg` in `Dev Tools` in `Console`:
+```json
+GET /wikimedia/_search
+{
+  "query": {
+    "query_string" : {
+      "default_field" : "title_url",
+      "query" : "*.jpg"
+    }
+  }
+}
+```
+- Get all documents:
+```json
+GET /wikimedia/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+```
+- Get single document by id (you have to change id):
+```json
+GET /wikimedia/_doc/t9sHjo4BIjiASG2HF4xv
+```
+
 ## Free online OpenSearch
 - Go to [bonsai.io](https://bonsai.io)
 - There is free tier with Kibana and limitation:
