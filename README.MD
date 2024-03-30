@@ -2,7 +2,7 @@
 
 ## Description
 - This is simple application with 2 modules
-  - producer that gets data from wikimedia and store it in Kafka
+  - producer gets data from `https://stream.wikimedia.org/v2/stream/recentchange` and store it in Kafka
   - consumer that get data from Kafka and send it to Opensearch
 ### Services description
 - Conduktor - runs on port `localhost:8080` - show data from Kafka in GUI
