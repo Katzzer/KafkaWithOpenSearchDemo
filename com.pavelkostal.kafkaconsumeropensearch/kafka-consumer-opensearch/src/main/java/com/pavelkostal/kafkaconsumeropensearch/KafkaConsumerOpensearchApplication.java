@@ -28,6 +28,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collections;
@@ -41,7 +42,6 @@ public class KafkaConsumerOpensearchApplication {
 		SpringApplication.run(KafkaConsumerOpensearchApplication.class, args);
 	}
 
-
 	@Bean
 	CommandLineRunner commandLineRunner() {
 		return args -> {
@@ -51,68 +51,12 @@ public class KafkaConsumerOpensearchApplication {
 			setShutdownHook(consumer);
 
 			try (openSearchClient; consumer) {
-				boolean indexExists = openSearchClient.indices().exists(new GetIndexRequest("wikimedia"), RequestOptions.DEFAULT);
-
-				if (!indexExists) {
-					CreateIndexRequest createIndexRequest = new CreateIndexRequest("wikimedia");
-					openSearchClient.indices().create(createIndexRequest, RequestOptions.DEFAULT); // creates "wikimedia" index in OpenSearch
-					log.info("Index wikimedia create");
-				} else {
-					log.info("Index wikimedia already exists");
-				}
+				createIndexInOpenSearch(openSearchClient);
 
 				// subscribe the consumer to topic
 				consumer.subscribe(Collections.singleton("wikimedia.recentchange"));
 
-				while (true) {
-					ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(3000));
-
-					int recordCount = records.count();
-					log.info("Received " + recordCount + " records");
-
-					BulkRequest bulkRequest = new BulkRequest();
-
-					for (ConsumerRecord<String, String> record : records) {
-
-						try {
-							// create id with Kafka
-							// String id = record.topic() + record.partition() + record.offset();
-							// get id from record, id is in metaObject
-							String id = extractId(record.value());
-
-							// send the record into OpenSearch
-							IndexRequest  indexRequest = new IndexRequest("wikimedia")
-									.source(record.value(), XContentType.JSON)
-									.id(id);
-
-							// assign index for every record
-//							IndexResponse response = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
-							// assign index for bulk
-							bulkRequest.add(indexRequest);
-
-//							log.info(response.getId());
-						} catch (Exception e) {
-							// do nothing
-						}
-
-					}
-
-					if (bulkRequest.numberOfActions() > 0) {
-						BulkResponse bulkResponse = openSearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-						log.info("Inserted into OpenSearch: " + bulkResponse.getItems().length + " records");
-
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-
-						// commit offsets after batch is consumed
-						consumer.commitSync();
-						log.info("Offset have been committed");
-					}
-
-				}
+				getDataFromKafkaAndSendItToOpenSearch(consumer, openSearchClient);
 
 			} catch (WakeupException e) {
 				log.info("Consumer is starting to shut down");
@@ -125,6 +69,70 @@ public class KafkaConsumerOpensearchApplication {
 			}
 
 		};
+	}
+
+	private static void createIndexInOpenSearch(RestHighLevelClient openSearchClient) throws IOException {
+		boolean indexExists = openSearchClient.indices().exists(new GetIndexRequest("wikimedia"), RequestOptions.DEFAULT);
+
+		if (!indexExists) {
+			CreateIndexRequest createIndexRequest = new CreateIndexRequest("wikimedia");
+			openSearchClient.indices().create(createIndexRequest, RequestOptions.DEFAULT); // creates "wikimedia" index in OpenSearch
+			log.info("Index wikimedia create");
+		} else {
+			log.info("Index wikimedia already exists");
+		}
+	}
+
+	private static void getDataFromKafkaAndSendItToOpenSearch(KafkaConsumer<String, String> consumer, RestHighLevelClient openSearchClient) throws IOException {
+		while (true) {
+			ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(3000));
+
+			int recordCount = records.count();
+			log.info("Received " + recordCount + " records");
+
+			BulkRequest bulkRequest = new BulkRequest();
+
+			for (ConsumerRecord<String, String> record : records) {
+
+				try {
+					// create id with Kafka
+					// String id = record.topic() + record.partition() + record.offset();
+					// get id from record, id is in metaObject
+					String id = extractIdFromRecord(record.value());
+
+					// send the record into OpenSearch
+					IndexRequest  indexRequest = new IndexRequest("wikimedia")
+							.source(record.value(), XContentType.JSON)
+							.id(id);
+
+					// assign index for every record
+//							IndexResponse response = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
+					// assign index for bulk
+					bulkRequest.add(indexRequest);
+
+//							log.info(response.getId());
+				} catch (Exception e) {
+					// do nothing
+				}
+
+			}
+
+			if (bulkRequest.numberOfActions() > 0) {
+				BulkResponse bulkResponse = openSearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+				log.info("Inserted into OpenSearch: " + bulkResponse.getItems().length + " records");
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				// commit offsets after batch is consumed
+				consumer.commitSync();
+				log.info("Offset have been committed");
+			}
+
+		}
 	}
 
 	private static void setShutdownHook(KafkaConsumer<String, String> consumer) {
@@ -190,7 +198,7 @@ public class KafkaConsumerOpensearchApplication {
 		return restHighLevelClient;
 	}
 
-	private static String extractId(String json) {
+	private static String extractIdFromRecord(String json) {
 		return JsonParser.parseString(json)
 				.getAsJsonObject()
 				.get("meta")
