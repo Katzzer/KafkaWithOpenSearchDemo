@@ -60,6 +60,13 @@ GET /wikimedia/_search
 ```json
 GET /wikimedia/_doc/t9sHjo4BIjiASG2HF4xv
 ```
+### Dejavu
+- Dejavu is a modern, open-source, web-based interface for Elasticsearch that comes with powerful features like filter views, query views, configurable CORS, a user-friendly data importer, and more. It is developed by Appbase.io and can serve as a nice GUI for interacting with Elasticsearch clusters.
+- Dejavu is primarily available in four variants:
+  - Chrome extension
+  - Docker: `docker run -p 1358:1358 -d appbaseio/dejavu`. Then Dejavu can be accessed using http://localhost:1358.`
+  - Standalone app
+  - Hosted app
 
 ## Free online OpenSearch
 - Go to [bonsai.io](https://bonsai.io)
@@ -69,7 +76,7 @@ GET /wikimedia/_doc/t9sHjo4BIjiASG2HF4xv
 
 ## Docker compose explanation
 ### Service: zookeeper
-- Uses the Docker image `confluentinc/cp-zookeeper:7.3.0`. Its hostname is set as zookeeper, and the container name is also set as zookeeper. The service exposes port 2181 and sets several environment variables for config setup.
+- Uses the Docker image `confluentinc/cp-zookeeper:7.3.0`. Its hostname is set as `zookeeper`, and the container name is also set as `zookeeper`. The service exposes port 2181 and sets several environment variables for config setup.
 - Service: kafka
   - Similarly, uses the Docker image `confluentinc/cp-kafka:7.3.0` with the hostname and container name of kafka. It exposes multiple ports and has multiple environment variables for configuration. It is set to depend on zookeeper, meaning it will only run if the zookeeper service is running.
 - Service: schema-registry
@@ -86,6 +93,11 @@ GET /wikimedia/_doc/t9sHjo4BIjiASG2HF4xv
 - The volumes key is used to set up data persistence or file sharing with the host system.
 
 ## More information about Kafka
+### Zookeeper
+- In the context of Apache Kafka, ZooKeeper is used for:
+  - Maintaining Cluster Membership: ZooKeeper keeps track of the status of Kafka nodes in the cluster and keeps track of Kafka topics, partitions, etc.
+  - Failover Handling: In the case of a Kafka broker failure, ZooKeeper will notify the producer and consumer about the broker failure and subsequent recovery.
+  - Configuration and Synchronization: Kafka uses Zookeeper to manage and synchronize topic configurations. ZooKeeper facilitates communication between broker and client, making sure changes propagate across the cluster uniformly.
 ### acks
 - The acks setting in Apache Kafka deals with the number of acknowledgements the producer needs from the broker(s). This affects the durability of the messages.
 - There are three possible values for acks:
@@ -108,9 +120,31 @@ props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 - Since Kafka 3.0 `acks=all (-1)` and `enable.indempotence=true`
 - Since Kafka 2.8 and lower `acks=1` and `enable.indempotence=false`
 - Current application setting is visible when app starts
+### Kafka connectors
+- Kafka Connectors are some sort of configuration for connection to external systems, but they also encapsulate more complex functionality
+- Kafka Sink Connector - simple explanation Kafka push data to external system like sql database
+  - However, this is not technically correct, while it can seem like Kafka is "pushing" the data into another system when you're using a Sink Connector, behind the scenes it's actually the Sink Connector that is pulling the data from Kafka, then converting and loading it into the destination system.
+  - So instead of making Java application that will pull data from Kafka and push it to another system we use Kafka sink
+### Kafka Connect REST API
+- All the actions performed by Landoop Kafka Connect UI are actually triggering REST API calls to Kafka Connect
+- REST API examples:
+  - Get Worker information
+  - List Connectors available on a Worker
+  - Ask about Active Connectors
+  - Get Information about a Connector Tasks and Config
+  - Get Connector Status
+  - Pause / Resume a Connector
+  - Delete our Connector
+  - Create a new Connector
+  - Update Connector configuration
+  - Get Connector configuration
+- More information: [Kafka Connect REST API Confluent documentation](https://docs.confluent.io/platform/current/connect/monitoring.html)
+  - example `curl localhost:8083/connectors` - List active connectors on a worker:
+### Landoop application
+- Landoop, now known as Lenses.io, provides a Stream Processing platform for managing Apache Kafka clusters and other streaming data technologies.
 
 ## How to use Kafka in command line (no need for this demo, but could be used for getting topics in command line)
-- Download Kafka [Kafka download Pge](https://kafka.apache.org/quickstart)
+- Download Kafka [Kafka download Page](https://kafka.apache.org/quickstart)
 - Go to download directory and type `tar -xzf kafka_X.XX-X.X.X.tgz`
 - Go to kafka directory `cd kafka_X.XX-X.X.X`
 - Start ZooKeeper server `./bin/zookeeper-server-start.sh config/zookeeper.properties`
